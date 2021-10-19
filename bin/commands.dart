@@ -9,7 +9,10 @@ import 'global.dart';
 
 void main(List<String> arguments) async {
   // Get settings
-  MzConfig.parseJSON();
+  if (!await MzConfig.parseJSON()) {
+    print("Failed to get settings.");
+    return;
+  }
 
   var telegram = Telegram(MzConfig.botId);
   var event = Event((await telegram.getMe()).username!);
