@@ -1,5 +1,10 @@
 import "dart:io";
 
+import 'package:teledart/teledart.dart';
+import 'package:teledart/telegram.dart';
+
+import 'config.dart';
+
 class MzBuildInfo {
   bool? succeed;
   DateTime? date;
@@ -8,6 +13,30 @@ class MzBuildInfo {
 
   MzBuildInfo({this.succeed, this.date, this.link, this.type});
 }
+
+class MzTg {
+  late TeleDart teledart;
+  late Event event;
+  late Telegram telegram;
+
+  Future<MzTg> setup() async {
+    telegram = Telegram(MzConfig.botId);
+    event = Event((await telegram.getMe()).username!);
+    teledart = TeleDart(telegram, event);
+
+    return this;
+  }
+
+  void sendTestersMessage(String text, {bool markdown = false}) async {
+    await teledart.telegram.sendMessage(
+      MzConfig.testersChat,
+      text,
+      parse_mode: markdown ? "Markdown" : null,
+    );
+  }
+}
+
+MzTg tg = MzTg();
 
 Future<String?> readStringFromFile(String path) async {
   File file = File(path);

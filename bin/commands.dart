@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:teledart/teledart.dart';
-import 'package:teledart/telegram.dart';
 import 'package:teledart/model.dart';
 
 import 'config.dart';
@@ -14,39 +12,39 @@ void main(List<String> arguments) async {
     return;
   }
 
-  var telegram = Telegram(MzConfig.botId);
-  var event = Event((await telegram.getMe()).username!);
-  var teledart = TeleDart(telegram, event);
+  await tg.setup();
 
-  teledart.start();
+  tg.teledart.start();
 
-  teledart
+  tg.teledart
       .onMessage(entityType: 'bot_command', keyword: 'start')
       .listen((message) {
     if (message.chat.id == MzConfig.testersChat ||
         message.chat.id == MzConfig.basicChat) {
-      teledart.telegram.sendMessage(message.chat.id, 'Я могу только /stop.',
+      tg.teledart.telegram.sendMessage(message.chat.id, 'Я могу только /stop.',
           reply_to_message_id: message.message_id);
     }
   });
 
-  teledart.onMessage(entityType: 'bot_command', keyword: 'q').listen((message) {
+  tg.teledart
+      .onMessage(entityType: 'bot_command', keyword: 'q')
+      .listen((message) {
     if (message.chat.id == MzConfig.testersChat) {
-      teledart.telegram.sendMessage(message.chat.id,
+      tg.teledart.telegram.sendMessage(message.chat.id,
           'Привет, меня зовут QuotLy! ой не тот текст, короче фиг тебе а не стикер, какашка 😝',
           reply_to_message_id: message.message_id);
     }
   });
 
-  teledart
+  tg.teledart
       .onMessage(entityType: 'bot_command', keyword: 'bootloop')
       .listen((message) async {
     if (message.chat.id == MzConfig.testersChat ||
         message.chat.id == MzConfig.basicChat) {
-      StickerSet mSucksStickers = await teledart.telegram
+      StickerSet mSucksStickers = await tg.teledart.telegram
           .getStickerSet("ghbtuszdv_1001428227417_by_QuotLyBot");
 
-      teledart.telegram.sendSticker(
+      tg.teledart.telegram.sendSticker(
           message.chat.id,
           mSucksStickers
               .stickers[message.chat.id != MzConfig.testersChat
@@ -57,23 +55,23 @@ void main(List<String> arguments) async {
     }
   });
 
-  teledart
+  tg.teledart
       .onMessage(entityType: 'bot_command', keyword: 'stop')
       .listen((message) {
     if (message.chat.id == MzConfig.testersChat ||
         message.chat.id == MzConfig.basicChat) {
-      teledart.telegram.sendMessage(message.chat.id, 'Я могу только /start.',
+      tg.teledart.telegram.sendMessage(message.chat.id, 'Я могу только /start.',
           reply_to_message_id: message.message_id);
     }
   });
 
-  teledart
+  tg.teledart
       .onMessage(entityType: 'bot_command', keyword: 'help')
       .listen((message) {
     if (message.chat.id == MzConfig.testersChat ||
         message.chat.id == MzConfig.basicChat) {
       if (message.chat.id != MzConfig.testersChat) {
-        teledart.telegram.sendMessage(
+        tg.teledart.telegram.sendMessage(
             message.chat.id,
             "Умею:\n"
             "/start|/stop: кринж #1\n"
@@ -84,7 +82,7 @@ void main(List<String> arguments) async {
         return;
       }
 
-      teledart.telegram.sendMessage(
+      tg.teledart.telegram.sendMessage(
           message.chat.id,
           "Умею:\n"
           "/start|/stop: кринж #1\n"
@@ -96,12 +94,12 @@ void main(List<String> arguments) async {
     }
   });
 
-  teledart
+  tg.teledart
       .onMessage(entityType: 'bot_command', keyword: 'last_build')
       .listen((message) async {
     if (message.chat.id != MzConfig.testersChat &&
         message.chat.id == MzConfig.basicChat) {
-      teledart.telegram.sendMessage(
+      tg.teledart.telegram.sendMessage(
           message.chat.id, 'Данная команда запрещена не для тестеров.',
           reply_to_message_id: message.message_id);
       return;
@@ -140,7 +138,7 @@ void main(List<String> arguments) async {
 
     String fullMsg = (date + "\n" + type + "\n" + succeed + "\n" + link);
 
-    teledart.telegram
+    tg.teledart.telegram
         .sendMessage(message.chat.id, fullMsg, parse_mode: "Markdown");
   });
 }
