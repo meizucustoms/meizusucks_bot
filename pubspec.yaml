@@ -9,6 +9,8 @@ environment:
 dependencies:
   teledart: '>=0.2.1'
   process_run: '>=0.12.2'
+  http: any
+  image: any
 
 dev_dependencies:
   lints: ^1.0.0
