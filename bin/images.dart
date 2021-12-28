@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:io' as io;
@@ -8,6 +7,7 @@ import 'package:teledart/model.dart';
 import 'package:http/http.dart' as http;
 
 import 'config.dart';
+import 'commands.dart';
 import 'global.dart';
 
 List<String> bootloopy = [
@@ -182,10 +182,14 @@ Future<void> imageEditorPlaceWord(TeleDartMessage message) async {
     return;
   }
 
+  if (message.text == null) {
+    return;
+  }
+
   if (message.text != null &&
-      message.text!.replaceAll("/cringeimg_word ", "").isNotEmpty &&
-      message.text!.replaceAll("/cringeimg_word", "").isNotEmpty) {
-    phrase = message.text!.replaceAll("/cringeimg_word ", "");
+      message.text!.replaceAll("/imgtxt ", "").isNotEmpty &&
+      message.text!.replaceAll("/imgtxt", "").isNotEmpty) {
+    phrase = message.text!.replaceAll("/imgtxt ", "");
   }
 
   late BitmapFont font;
@@ -271,12 +275,16 @@ Future<void> imageEditorDownUpScale(
     return;
   }
 
+  if (message.text == null) {
+    return;
+  }
+
   int initialWidth = image.width;
   int scale = 2;
 
-  if (message.text != (pixelate ? "/cringeimg_res_pix" : "/cringeimg_res")) {
-    int? t = int.tryParse(message.text!.replaceAll(
-        "${(pixelate ? "/cringeimg_res_pix" : "/cringeimg_res")} ", ""));
+  if (message.text != (pixelate ? "/imgpix" : "/imgshk")) {
+    int? t = int.tryParse(
+        message.text!.replaceAll("${(pixelate ? "/imgpix" : "/imgshk")} ", ""));
     if (t != null && t > 0) {
       scale = t;
     }
@@ -307,10 +315,14 @@ Future<void> imageEditorFunnyScale(TeleDartMessage message) async {
     return;
   }
 
+  if (message.text == null) {
+    return;
+  }
+
   int scale = 5;
 
-  if (message.text != "/cringeimg_scale") {
-    int? t = int.tryParse(message.text!.replaceAll("/cringeimg_scale ", ""));
+  if (message.text != "/imgscl") {
+    int? t = int.tryParse(message.text!.replaceAll("/imgscl ", ""));
     if (t != null && t > 0) {
       scale = t;
     }
@@ -332,10 +344,14 @@ Future<void> imageEditorDistortion1(TeleDartMessage message) async {
     return;
   }
 
+  if (message.text == null) {
+    return;
+  }
+
   int scale = 5;
 
-  if (message.text != "/cringeimg_dst1") {
-    int? t = int.tryParse(message.text!.replaceAll("/cringeimg_dst1 ", ""));
+  if (message.text != "/imgdst1") {
+    int? t = int.tryParse(message.text!.replaceAll("/imgdst1 ", ""));
     if (t != null && t > 0) {
       scale = t;
     }
@@ -354,8 +370,12 @@ Future<void> imageEditorDistortion2(TeleDartMessage message) async {
 
   int scale = 5;
 
-  if (message.text != "/cringeimg_dst2") {
-    int? t = int.tryParse(message.text!.replaceAll("/cringeimg_dst2 ", ""));
+  if (message.text == null) {
+    return;
+  }
+
+  if (message.text != "/imgdst2") {
+    int? t = int.tryParse(message.text!.replaceAll("/imgdst2 ", ""));
     if (t != null && t > 0) {
       scale = t;
     }
@@ -370,56 +390,62 @@ Future<void> setupImageCallbacks() async {
   await initFonts();
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_word")
+      .onMessage(entityType: "bot_command", keyword: "imgtxt")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorPlaceWord(message);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorPlaceWord(message);
   });
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_res")
+      .onMessage(entityType: "bot_command", keyword: "imgshk")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorDownUpScale(message, false);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorDownUpScale(message, false);
   });
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_res_pix")
+      .onMessage(entityType: "bot_command", keyword: "imgpix")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorDownUpScale(message, true);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorDownUpScale(message, true);
   });
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_scale")
+      .onMessage(entityType: "bot_command", keyword: "imgscl")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorFunnyScale(message);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorFunnyScale(message);
   });
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_dst1")
+      .onMessage(entityType: "bot_command", keyword: "imgdst1")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorDistortion1(message);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorDistortion1(message);
   });
 
   tg.teledart
-      .onMessage(entityType: "bot_command", keyword: "cringeimg_dst2")
+      .onMessage(entityType: "bot_command", keyword: "imgdst2")
       .listen((message) async {
-    if (message.chat.id == MzConfig.testersChat ||
-        message.chat.id == MzConfig.basicChat) {
-      await imageEditorDistortion2(message);
+    if (isMessageBlocked(message, false)) {
+      return;
     }
+
+    await imageEditorDistortion2(message);
   });
 }

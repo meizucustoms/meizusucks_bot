@@ -11,6 +11,10 @@ dependencies:
   process_run: '>=0.12.2'
   http: any
   image: any
+  ffi: any
+  utf_convert: any
+  sqflite_common_ffi: any
+  function_tree: any
 
 dev_dependencies:
   lints: ^1.0.0
